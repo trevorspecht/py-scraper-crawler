@@ -9,10 +9,9 @@ from itemadapter import ItemAdapter
 
 
 class IrsFormsPipeline:
-    formArray = []
+    formArray = [{}]
     def process_item(self, item, spider):
-        self.formArray.append(item)
-        # return item
+        self.formArray[0] = item
 
     def close_spider(self, spider):
-        print(self.formArray)
+        print('result array: ', self.formArray)
