@@ -41,12 +41,17 @@ class IrsFormsPipeline:
         
 
 class DownloadFormsPipeline:
-    
+    FILES_STORE = 'form_downloads'
+
     def open_spider(self, spider):
-        self.file = open('../form_downloads/', 'w')
+        pass
 
     def close_spider(self, spider):
-        self.file.close()
+        # self.file.close()
+        pass
 
     def process_item(self, item, spider):
-        return item
+        scrpd = ItemAdapter(item)
+        # self.file = open(f'{self.FILES_STORE}/{scrpd['form_number']}', 'w')
+        print('download link: ', scrpd)
+        return scrpd

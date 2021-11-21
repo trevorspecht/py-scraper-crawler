@@ -3,44 +3,37 @@ import scrapy
 
 class DownloadformsSpider(scrapy.Spider):
     name = 'downloadforms'
-    form_name = '706-NA'
+    form_number = '706-NA'
     year_range = '1990-2000'
+    url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form_number}&criteria=formNumber'
+    file_urls = []
+    years = []
 
-    form_years = year_range.split('-')
+    end_years = year_range.split('-')
+    for year in range(int(end_years[0]), int(end_years[1])+1):
+        years.append(year)
 
     def start_requests(self):
-        url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form}&criteria=formNumber'
-        yield scrapy.Request(url=url, callback=self.parse, cb_kwargs=dict(form=form))
-
-    def parse(self, response, form):
-
-        for year in self.form_years:
-            print(year)
+        yield scrapy.Request(url=self.url, callback=self.parse)
 
 
+    def parse(self, response):
         table_rows = response.xpath('//table[@class="picklist-dataTable"]/tr')
         next_page_link = response.xpath('//div[@class="paginationBottom"]/a[contains(text(), "Next")]/@href').get()
         next_page_absolute_url = response.urljoin(next_page_link)
 
         for row in table_rows:
-            form_number = row.xpath('./td[@class="LeftCellSpacer"]/a/text()').get()
-
-            if form_number == f'Form {form}':
-                form_title = row.xpath('normalize-space(./td[@class="MiddleCellSpacer"]/text())').get()
-                year = row.xpath('normalize-space(./td[@class="EndCellSpacer"]/text())').get()
-
-                form_entry = {
-                    # 'form_link': response.xpath('//td[has-class("LeftCellSpacer")]/a/@href').get(),
-                    'form_number': form_number,
-                    'form_title': form_title,
-                    'min_year': year,
-                    'max_year': year
-                }
-
-                yield form_entry
+            form_link = row.xpath('./td[@class="LeftCellSpacer"]/a/href').get()
+            form_year = row.xpath('normalize-space(./td[@class="EndCellSpacer"]/text())').get()
+            print('form year: ', form_year)
+            for year in self.years:
+                if year == form_year:
+                    self.file_urls.append(form_link)
+                    print(form_link)
+                    yield form_link
         
         if next_page_link:
-            yield scrapy.Request(url=next_page_absolute_url, callback=self.parse, cb_kwargs=dict(form=form))
+            yield scrapy.Request(url=next_page_absolute_url, callback=self.parse)
 
 
 
