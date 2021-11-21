@@ -1,14 +1,20 @@
 [
     {
+        "form_number": "Form 1095-C",
+        "form_title": "Employer-Provided Health Insurance Offer and Coverage",
+        "min_year": "2014",
+        "max_year": "2021"
+    },
+    {
         "form_number": "Form 706-NA",
         "form_title": "United States Estate (and Generation-Skipping Transfer) Tax Return Estate of nonresident not a citizen of the United States",
         "min_year": "1962",
         "max_year": "2019"
     },
     {
-        "form_number": "Form 1095-C",
-        "form_title": "Employer-Provided Health Insurance Offer and Coverage",
-        "min_year": "2014",
+        "form_number": "Form W-2",
+        "form_title": "Wage and Tax Statement (Info Copy Only)",
+        "min_year": "1954",
         "max_year": "2021"
     },
     {
@@ -16,5 +22,11 @@
         "form_title": "Acquisition or Abandonment of Secured Property (Info Copy Only)",
         "min_year": "1977",
         "max_year": "2021"
+    },
+    {
+        "form_number": "Form 1040",
+        "form_title": "U.S. Individual Income Tax Return",
+        "min_year": "1864",
+        "max_year": "2020"
     }
 ]

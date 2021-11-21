@@ -3,7 +3,7 @@ import scrapy
 
 class IrsformsSpider(scrapy.Spider):
     name = 'irsforms'
-    form_list = ['1099-A', '1095-C', '706-NA']
+    form_list = ['1099-A', '1095-C', '706-NA', 'W-2', '1040']
     result = []
 
 
