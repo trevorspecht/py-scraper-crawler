@@ -21,22 +21,22 @@ class IrsFormsPipeline:
         self.file.close()
 
     def process_item(self, item, spider):
-
-        f = (form for index,form in enumerate(self.form_array) if form.get('form_number') == item['form_number'])
-        i = (index for index,form in enumerate(self.form_array) if form.get('form_number') == item['form_number'])
+        scrpd = ItemAdapter(item)
+        f = (form for index,form in enumerate(self.form_array) if form.get('form_number') == scrpd['form_number'])
+        i = (index for index,form in enumerate(self.form_array) if form.get('form_number') == scrpd['form_number'])
         form = next(f, None)
         index = next(i, None)
         if form:
-            if item['min_year'] < form['min_year']:
-                form['min_year'] = item['min_year']
-            if item['max_year'] > form['max_year']:
-                form['max_year'] = item['max_year']
+            if scrpd['min_year'] < form['min_year']:
+                form['min_year'] = scrpd['min_year']
+            if scrpd['max_year'] > form['max_year']:
+                form['max_year'] = scrpd['max_year']
 
             self.form_array.pop(index)
             self.form_array.insert(index, form)
         else:
-            self.form_array.append(item)
+            self.form_array.append(scrpd)
 
-        return item
+        return scrpd
         
 
