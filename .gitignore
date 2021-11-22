@@ -7,8 +7,10 @@ __pycache__/
 *.so
 
 # Downloads
-form_downloads
-forms.json
+results/
+
+#File System
+.DS_Store
 
 # Distribution / packaging
 .Python

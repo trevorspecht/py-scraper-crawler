@@ -3,11 +3,16 @@ from ..items import IrsFormsItem
 
 class DownloadformsSpider(scrapy.Spider):
     name = 'downloadforms'
-    form_number = '706-NA'
-    year_range = '1990-2000'
+    form_number = '1099-A'
+    year_range = '1990-2015'
     url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form_number}&criteria=formNumber'
     years = []
     form = IrsFormsItem()
+
+    custom_settings = {
+        'IRS_FORMS_PIPELINE_ENABLED': False,
+        'DOWNLOAD_FORMS_PIPELINE_ENABLED': True
+    }
 
     end_years = year_range.split('-')
     for year in range(int(end_years[0]), int(end_years[1])+1):
@@ -37,3 +42,8 @@ class DownloadformsSpider(scrapy.Spider):
         
         if next_page_link:
             yield scrapy.Request(url=next_page_absolute_url, callback=self.parse)
+
+
+# import sys
+# form_number = sys.argv[1]
+# year_range = sys.argv[2]

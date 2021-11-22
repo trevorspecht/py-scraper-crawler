@@ -5,9 +5,8 @@
 
 
 # useful for handling different item types with a single interface
-import scrapy
 from itemadapter import ItemAdapter
-# from scrapy.pipelines.files import FilesPipeline
+from scrapy.exceptions import NotConfigured
 import json
 import requests
 import os
@@ -17,12 +16,24 @@ class IrsFormsPipeline:
     form_array = []
 
     def open_spider(self, spider):
-        self.file = open('forms.json', 'w')
+        print('opening spider: ', spider.name)
     
     def close_spider(self, spider):
+        print('closing spider: ', spider.name)
+        print('final array: ', self.form_array)
         formatted_array = json.dumps(self.form_array, indent=4)
-        self.file.write(formatted_array)
-        self.file.close()
+        basepath = '../results'
+        filename = 'form_info.json'
+        os.makedirs(basepath, exist_ok=True)
+        filepath = os.path.join(basepath, filename)
+        with open(filepath, 'w') as file:
+            file.write(formatted_array)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        if not crawler.settings.getbool('IRS_FORMS_PIPELINE_ENABLED'):
+            raise NotConfigured
+        return cls()
 
     def process_item(self, item, spider):
         scrpd = ItemAdapter(item)
@@ -36,10 +47,12 @@ class IrsFormsPipeline:
             if scrpd['max_year'] > form['max_year']:
                 form['max_year'] = scrpd['max_year']
 
+            print('inserting item: ', form)
             self.form_array.pop(index)
-            self.form_array.insert(index, form)
+            self.form_array.insert(index, dict(form))
         else:
-            self.form_array.append(scrpd)
+            print('appending item: ', item)
+            self.form_array.append(dict(item))
 
         return scrpd
         
@@ -47,29 +60,27 @@ class IrsFormsPipeline:
 class DownloadFormsPipeline:
 
     def open_spider(self, spider):
-        print('opening download forms spider')
+        print('opening spider: ', spider.name)
 
     def close_spider(self, spider):
-        print('closing download forms spider')
+        print('closing spider: ', spider.name)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        if not crawler.settings.getbool('DOWNLOAD_FORMS_PIPELINE_ENABLED'):
+            raise NotConfigured
+        return cls()
 
     def process_item(self, item, spider):
         scrpd = ItemAdapter(item)
         response = requests.get(scrpd['file_urls'])
         form_number = scrpd['form_number']
         year = scrpd['year']
-        os.makedirs(f'../../../form_downloads/{form_number}', exist_ok=True)
-        path = f'../../../form_downloads/{form_number}/{form_number} - {year}.pdf'
-        with open(path, 'wb') as file:
+        basepath = os.path.join('../results', form_number)
+        filename = f'{form_number} - {year}.pdf'
+        os.makedirs(basepath, exist_ok=True)
+        filepath = os.path.join(basepath, filename)
+        with open(filepath, 'wb') as file:
             file.write(response.content)
-        return scrpd
+        return item
 
-
-
-    # def file_path(self, request, response=None, info=None, *, item):
-    #     return f'{self.FILES_STORE}/{item['form_number']}/'
-
-    # def get_media_requests(self, item, info):
-    #     for form_url in item['file_urls']:
-    #         yield scrapy.Request(form_url)
-
-    # def download_completed(self, results, item, info):
