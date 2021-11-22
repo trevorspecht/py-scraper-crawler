@@ -3,7 +3,8 @@ from ..items import IrsFormsItem
 
 class IrsformsSpider(scrapy.Spider):
     name = 'irsforms'
-    form_list = ['1099-A', '1095-C', '706-NA']
+    input = input('enter form names separated by commas:')
+    form_list = input.replace(' ', '').split(',')
     result = []
     form = IrsFormsItem()
 
