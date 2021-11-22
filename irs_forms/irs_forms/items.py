@@ -7,6 +7,10 @@ import scrapy
 
 
 class IrsFormsItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    file_urls = scrapy.Field()
+    files = scrapy.Field()
+    form_number = scrapy.Field()
+    form_title = scrapy.Field()
+    year = scrapy.Field()
+    min_year = scrapy.Field()
+    max_year = scrapy.Field()

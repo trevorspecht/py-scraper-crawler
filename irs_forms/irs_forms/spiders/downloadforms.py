@@ -1,5 +1,5 @@
 import scrapy
-
+from ..items import IrsFormsItem
 
 class DownloadformsSpider(scrapy.Spider):
     name = 'downloadforms'
@@ -7,6 +7,7 @@ class DownloadformsSpider(scrapy.Spider):
     year_range = '1990-2000'
     url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form_number}&criteria=formNumber'
     years = []
+    form = IrsFormsItem()
 
     end_years = year_range.split('-')
     for year in range(int(end_years[0]), int(end_years[1])+1):
@@ -22,18 +23,17 @@ class DownloadformsSpider(scrapy.Spider):
         next_page_absolute_url = response.urljoin(next_page_link)
 
         for row in table_rows:
+            form_number = row.xpath('./td[@class="LeftCellSpacer"]/a/text()').get()
             form_link = row.xpath('./td[@class="LeftCellSpacer"]/a/@href').get()
             form_year = row.xpath('normalize-space(./td[@class="EndCellSpacer"]/text())').get()
             
             for year in self.years:
                 year_str = str(year)
                 if year_str == form_year:
-                    yield {
-                        'form_link': form_link
-                    }
+                    self.form['form_number'] = form_number
+                    self.form['file_urls'] = form_link
+                    self.form['year'] = year
+                    yield self.form
         
         if next_page_link:
             yield scrapy.Request(url=next_page_absolute_url, callback=self.parse)
-
-
-

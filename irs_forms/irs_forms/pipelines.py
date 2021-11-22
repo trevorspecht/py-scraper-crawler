@@ -5,8 +5,12 @@
 
 
 # useful for handling different item types with a single interface
+import scrapy
 from itemadapter import ItemAdapter
+# from scrapy.pipelines.files import FilesPipeline
 import json
+import requests
+import os
 
 
 class IrsFormsPipeline:
@@ -41,17 +45,31 @@ class IrsFormsPipeline:
         
 
 class DownloadFormsPipeline:
-    FILES_STORE = 'form_downloads'
 
     def open_spider(self, spider):
         print('opening download forms spider')
 
     def close_spider(self, spider):
         print('closing download forms spider')
-        # self.file.close()
 
     def process_item(self, item, spider):
         scrpd = ItemAdapter(item)
-        # self.file = open(f'{self.FILES_STORE}/{scrpd['form_number']}', 'w')
-        print('download link: ', scrpd['form_link'])
+        response = requests.get(scrpd['file_urls'])
+        form_number = scrpd['form_number']
+        year = scrpd['year']
+        os.makedirs(f'../../../form_downloads/{form_number}', exist_ok=True)
+        path = f'../../../form_downloads/{form_number}/{form_number} - {year}.pdf'
+        with open(path, 'wb') as file:
+            file.write(response.content)
         return scrpd
+
+
+
+    # def file_path(self, request, response=None, info=None, *, item):
+    #     return f'{self.FILES_STORE}/{item['form_number']}/'
+
+    # def get_media_requests(self, item, info):
+    #     for form_url in item['file_urls']:
+    #         yield scrapy.Request(form_url)
+
+    # def download_completed(self, results, item, info):

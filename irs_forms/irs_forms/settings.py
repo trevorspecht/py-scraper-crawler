@@ -12,6 +12,7 @@ BOT_NAME = 'irs_forms'
 SPIDER_MODULES = ['irs_forms.spiders']
 NEWSPIDER_MODULE = 'irs_forms.spiders'
 
+# FILES_STORE = '../../form_downloads'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'irs_forms (+http://www.yourdomain.com)'
@@ -63,6 +64,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+   # 'scrapy.pipelines.files.FilesPipeline': 1,
    # 'irs_forms.pipelines.IrsFormsPipeline': 300,
    'irs_forms.pipelines.DownloadFormsPipeline': 600
 }
