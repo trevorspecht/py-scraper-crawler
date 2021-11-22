@@ -1,15 +1,15 @@
 import scrapy
-
+from ..items import IrsFormsItem
 
 class IrsformsSpider(scrapy.Spider):
     name = 'irsforms'
     form_list = ['1099-A', '1095-C', '706-NA']
     result = []
-
+    form = IrsFormsItem()
 
     def start_requests(self):
         for form in self.form_list:
-            url = 'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{}&criteria=formNumber'.format(form)
+            url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form}&criteria=formNumber'
             yield scrapy.Request(url=url, callback=self.parse, cb_kwargs=dict(form=form))
 
 
@@ -21,12 +21,11 @@ class IrsformsSpider(scrapy.Spider):
         for row in table_rows:
             form_number = row.xpath('./td[@class="LeftCellSpacer"]/a/text()').get()
 
-            if form_number == 'Form {}'.format(form):
+            if form_number == f'Form {form}':
                 form_title = row.xpath('normalize-space(./td[@class="MiddleCellSpacer"]/text())').get()
                 year = row.xpath('normalize-space(./td[@class="EndCellSpacer"]/text())').get()
 
                 form_entry = {
-                    # 'form_link': response.xpath('//td[has-class("LeftCellSpacer")]/a/@href').get(),
                     'form_number': form_number,
                     'form_title': form_title,
                     'min_year': year,
