@@ -44,14 +44,14 @@ class DownloadFormsPipeline:
     FILES_STORE = 'form_downloads'
 
     def open_spider(self, spider):
-        pass
+        print('opening download forms spider')
 
     def close_spider(self, spider):
+        print('closing download forms spider')
         # self.file.close()
-        pass
 
     def process_item(self, item, spider):
         scrpd = ItemAdapter(item)
         # self.file = open(f'{self.FILES_STORE}/{scrpd['form_number']}', 'w')
-        print('download link: ', scrpd)
+        print('download link: ', scrpd['form_link'])
         return scrpd
