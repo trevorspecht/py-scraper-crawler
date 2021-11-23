@@ -3,20 +3,27 @@ from ..items import IrsFormsItem
 
 class IrsformsSpider(scrapy.Spider):
     name = 'irsforms'
-    input = input('enter form names separated by commas:')
-    form_list = input.replace(' ', '').split(',')
-    result = []
+    form_list = []
+    url = ''
     form = IrsFormsItem()
 
+    # make sure the only pipeline activated is the one associated with the running spider
     custom_settings = {
         'IRS_FORMS_PIPELINE_ENABLED': True,
         'DOWNLOAD_FORMS_PIPELINE_ENABLED': False
     }
 
+
     def start_requests(self):
-        for form in self.form_list:
-            url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form}&criteria=formNumber'
-            yield scrapy.Request(url=url, callback=self.parse, cb_kwargs=dict(form=form))
+        self.form_list = input('Enter form name(s) separated by commas, ie. W-2,1040,1099-A :').replace(' ', '').split(',')
+        if len(self.form_list) == 1 and self.form_list[0] == '':
+            print('ERROR: No form numbers entered')
+            return None
+        else:
+            for form in self.form_list:
+                if form:
+                    self.url = f'https://apps.irs.gov/app/picklist/list/priorFormPublication.html?value=Form+{form}&criteria=formNumber'
+                    yield scrapy.Request(url=self.url, callback=self.parse, cb_kwargs=dict(form=form))
 
 
     def parse(self, response, form):

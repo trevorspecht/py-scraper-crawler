@@ -22,7 +22,7 @@ class IrsFormsPipeline:
         print('closing spider: ', spider.name)
         print('final array: ', self.form_array)
         formatted_array = json.dumps(self.form_array, indent=4)
-        basepath = '../results'
+        basepath = 'results'
         filename = 'form_info.json'
         os.makedirs(basepath, exist_ok=True)
         filepath = os.path.join(basepath, filename)
@@ -76,11 +76,13 @@ class DownloadFormsPipeline:
         response = requests.get(scrpd['file_urls'])
         form_number = scrpd['form_number']
         year = scrpd['year']
-        basepath = os.path.join('../results', form_number)
+
+        basepath = os.path.join('results', form_number)
         filename = f'{form_number} - {year}.pdf'
-        os.makedirs(basepath, exist_ok=True)
         filepath = os.path.join(basepath, filename)
+        
+        os.makedirs(basepath, exist_ok=True)
+
         with open(filepath, 'wb') as file:
             file.write(response.content)
         return item
-

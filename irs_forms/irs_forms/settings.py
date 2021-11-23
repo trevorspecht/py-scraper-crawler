@@ -66,8 +66,8 @@ ITEM_PIPELINES = {
    'irs_forms.pipelines.IrsFormsPipeline': 300,
    'irs_forms.pipelines.DownloadFormsPipeline': 600
 }
-IRS_FORMS_PIPELINE_ENABLED = True
-DOWNLOAD_FORMS_PIPELINE_ENABLED = True
+IRS_FORMS_PIPELINE_ENABLED = False
+DOWNLOAD_FORMS_PIPELINE_ENABLED = False
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
